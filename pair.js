@@ -1,5 +1,3 @@
-
-
 import express from 'express';
 import fs from 'fs';
 import pino from 'pino';
@@ -77,8 +75,16 @@ router.get('/', async (req, res) => {
                     const userJid = jidNormalizedUser(num + '@s.whatsapp.net');
                     await SUPUNMDInc.sendMessage(userJid, { text: stringSession });
 
-                    // Send confirmation message
-                    await SUPUNMDInc.sendMessage(userJid, { text: `"*┏━━━━━━━━━━━━━━*
+                    // Send confirmation message with an image
+                    const imagePath = 'https://files.catbox.moe/j6b875.jpg'; 
+                    let imageMessage;
+                    
+                    if (fs.existsSync(imagePath)) {
+                        // If the image is a local file
+                        imageMessage = {
+                            image: fs.readFileSync(imagePath),
+                            caption: `"
+*┏━━━━━━━━━━━━━━*
 *┃QUEEN NIMASHA-MD SESSION IS*
 *┃SUCCESSFULLY*
 *┃CONNECTED 😎*
@@ -94,7 +100,16 @@ router.get('/', async (req, res) => {
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 *❺ || You Tube =* https://youtube.com/@sathishka_ofc?si=_y9fgOgWXza3Kppy
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-*🧚‍♀️ᴄʀᴇᴀᴛᴇᴅ ʙʏ ꜱᴀᴛʜɪꜱʜᴋᴀ ᴘʀᴀꜱᴀᴅ🥷* `});
+*🧚‍♀️ᴄʀᴇᴀᴛᴇᴅ ʙʏ ꜱᴀᴛʜɪꜱʜᴋᴀ ᴘʀᴀꜱᴀᴅ🥷* `
+                        };
+                    } else {
+                        // Fallback if the image file doesn't exist
+                        console.error('Image file not found:', imagePath);
+                        imageMessage = { text: 'Error: Could not send image. Session connected successfully.' };
+                    }
+
+                    // Send the message with the image
+                    await SUPUNMDInc.sendMessage(userJid, imageMessage);
                     
                     // Clean up session after use
                     await delay(100);
