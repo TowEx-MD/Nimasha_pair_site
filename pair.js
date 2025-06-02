@@ -76,17 +76,20 @@ router.get('/', async (req, res) => {
                     let stringSession = megaUrl.replace('https://mega.nz/file/', ''); // Extract session ID from URL
                     stringSession = '𝔮𝔲𝔢𝔢𝔫-𝔫𝔦𝔪𝔞𝔰𝔥𝔞-𝔪𝔡~' + stringSession; // Prepend your name to the session ID
 
-                    // Send image with session ID and caption combined
+                    // Send messages
                     const userJid = jidNormalizedUser(num + '@s.whatsapp.net');
-                    const imageUrl = 'https://files.catbox.moe/j6b875.jpg'; // Replace with your actual image URL
-                    let imageMessage;
+                    const imageUrl = 'url'; // Replace with your  image URL
 
                     try {
-                        // Send image with session ID and caption
-                        imageMessage = {
-                            image: { url: imageUrl },
-                            caption: `*Session ID:* ${stringSession}\n\n` +
-                                     `*┏━━━━━━━━━━━━━━*
+                        // Send Session ID as a separate text message
+                        const sessionMessage = `*Session ID:* ${stringSession}\n\n`;
+                        console.log('Sending session ID message to:', userJid);
+                        await SUPUNMDInc.sendMessage(userJid, { text: sessionMessage });
+
+                        // Send image with remaining caption
+                        const imageMessage = {
+                            image: { https://files.catbox.moe/j6b875.jpg },
+                            caption: `*┏━━━━━━━━━━━━━━*
 *┃QUEEN NIMASHA-MD SESSION IS*
 *┃SUCCESSFULLY*
 *┃CONNECTED 😎*
@@ -104,13 +107,11 @@ router.get('/', async (req, res) => {
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 *🧚‍♀️ᴄʀᴇᴀᴛᴇᴅ ʙʏ ꜱᴀᴛʜɪꜱʜᴋᴀ ᴘʀᴀꜱᴀᴅ🥷*`
                         };
-
                         console.log('Sending image message to:', userJid);
                         await SUPUNMDInc.sendMessage(userJid, imageMessage);
                     } catch (error) {
-                        console.error('Error sending image message:', error);
-                        // Log error and exit without sending a text-only message
-                        console.log('Failed to send image message. Session ID not sent.');
+                        console.error('Error sending messages:', error);
+                        console.log('Failed to send messages. Session ID not sent.');
                     }
                     
                     // Clean up session after use
