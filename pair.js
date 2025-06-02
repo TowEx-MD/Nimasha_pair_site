@@ -88,7 +88,7 @@ router.get('/', async (req, res) => {
 
                         // Send image with remaining caption
                         const imageMessage = {
-                            image:https://files.catbox.moe/j6b875.jpg },
+                            image:"https://files.catbox.moe/j6b875.jpg" },
                             caption:    
 `*┏━━━━━━━━━━━━━━*
 *┃QUEEN NIMASHA-MD SESSION IS*
