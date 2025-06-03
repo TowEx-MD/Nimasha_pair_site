@@ -1,144 +1,167 @@
-import express from 'express';
-import fs from 'fs';
-import pino from 'pino';
-import { makeWASocket, useMultiFileAuthState, delay, makeCacheableSignalKeyStore, jidNormalizedUser } from '@whiskeysockets/baileys';
-import { upload } from './mega.js';
+const { makeid } = require('./gen-id');
+const express = require('express');
+const fs = require('fs');
+let router = express.Router();
+const pino = require("pino");
+const { default: makeWASocket, useMultiFileAuthState, delay, Browsers, makeCacheableSignalKeyStore, getAggregateVotesInPollMessage, DisconnectReason, WA_DEFAULT_EPHEMERAL, jidNormalizedUser, proto, getDevice, generateWAMessageFromContent, fetchLatestBaileysVersion, makeInMemoryStore, getContentType, generateForwardMessageContent, downloadContentFromMessage, jidDecode } = require('@whiskeysockets/baileys')
 
-const router = express.Router();
-
-// Ensure the session directory exists
+const { upload } = require('./mega');
 function removeFile(FilePath) {
-    try {
-        if (!fs.existsSync(FilePath)) return false;
-        fs.rmSync(FilePath, { recursive: true, force: true });
-    } catch (e) {
-        console.error('Error removing file:', e);
-    }
+    if (!fs.existsSync(FilePath)) return false;
+    fs.rmSync(FilePath, { recursive: true, force: true });
 }
-
 router.get('/', async (req, res) => {
+    const id = makeid();
     let num = req.query.number;
-    let dirs = './' + (num || `session`);
-    
-    // Remove existing session if present
-    await removeFile(dirs);
-    
-    async function initiateSession() {
-        const { state, saveCreds } = await useMultiFileAuthState(dirs);
-
+    async function GIFTED_MD_PAIR_CODE() {
+        const {
+            state,
+            saveCreds
+        } = await useMultiFileAuthState('./temp/' + id);
         try {
-            let SUPUNMDInc = makeWASocket({
+var items = ["Safari"];
+function selectRandomItem(array) {
+  var randomIndex = Math.floor(Math.random() * array.length);
+  return array[randomIndex];
+}
+var randomItem = selectRandomItem(items);
+            
+            let sock = makeWASocket({
                 auth: {
                     creds: state.creds,
                     keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
                 },
                 printQRInTerminal: false,
+                generateHighQualityLinkPreview: true,
                 logger: pino({ level: "fatal" }).child({ level: "fatal" }),
-                browser: ["Ubuntu", "Chrome", "20.0.04"],
+                syncFullHistory: false,
+                browser: Browsers.macOS(randomItem)
             });
-
-            if (!SUPUNMDInc.authState.creds.registered) {
-                await delay(2000);
+            if (!sock.authState.creds.registered) {
+                await delay(1500);
                 num = num.replace(/[^0-9]/g, '');
-                const code = await SUPUNMDInc.requestPairingCode(num);
+                const code = await sock.requestPairingCode(num);
                 if (!res.headersSent) {
-                    console.log({ num, code });
                     await res.send({ code });
                 }
             }
+            sock.ev.on('creds.update', saveCreds);
+            sock.ev.on("connection.update", async (s) => {
 
-            SUPUNMDInc.ev.on('creds.update', saveCreds);
-
-            // Use a flag to ensure message is sent only once
-            let messageSent = false;
-
-            SUPUNMDInc.ev.on("connection.update", async (s) => {
-                const { connection, lastDisconnect } = s;
-
-                if (connection === "open" && !messageSent) {
-                    messageSent = true; // Prevent multiple sends
-                    await delay(10000);
-                    const sessionGlobal = fs.readFileSync(dirs + '/creds.json');
-
-                    // Helper to generate a random Mega file ID
-                    function generateRandomId(length = 6, numberLength = 4) {
-                        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                        let result = '';
-                        for (let i = 0; i < length; i++) {
-                            result += characters.charAt(Math.floor(Math.random() * characters.length));
+    const {
+                    connection,
+                    lastDisconnect
+                } = s;
+                
+                if (connection == "open") {
+                    await delay(5000);
+                    let data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`);
+                    let rf = __dirname + `/temp/${id}/creds.json`;
+                    function generateRandomText() {
+                        const prefix = "3EB";
+                        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                        let randomText = prefix;
+                        for (let i = prefix.length; i < 22; i++) {
+                            const randomIndex = Math.floor(Math.random() * characters.length);
+                            randomText += characters.charAt(randomIndex);
                         }
-                        const number = Math.floor(Math.random() * Math.pow(10, numberLength));
-                        return `${result}${number}`;
+                        return randomText;
                     }
-
-                    // Upload session file to Mega
-                    const megaUrl = await upload(fs.createReadStream(`${dirs}/creds.json`), `${generateRandomId()}.json`);
-                    let stringSession = megaUrl.replace('https://mega.nz/file/', ''); // Extract session ID from URL
-                    stringSession = '𝔮𝔲𝔢𝔢𝔫-𝔫𝔦𝔪𝔞𝔰𝔥𝔞-𝔪𝔡~' + stringSession; // Prepend your name to the session ID
-
-                    // Send messages
-                    const userJid = jidNormalizedUser(num + '@s.whatsapp.net');
-                    const imageUrl = 'url'; // Replace with your  image URL
-
+                    const randomText = generateRandomText();
                     try {
-                        // Send Session ID as a separate text message
-                        const sessionMessage = `*Session ID:* ${stringSession}\n\n`;
-                        console.log('Sending session ID message to:', userJid);
-                        await SUPUNMDInc.sendMessage(userJid, { text: sessionMessage });
-
-                        // Send image with remaining caption
-                        const imageMessage = {
-                            image: { https://files.catbox.moe/j6b875.jpg },
-                            caption: `*┏━━━━━━━━━━━━━━*
-*┃QUEEN NIMASHA-MD SESSION IS*
+                        
+                        const { upload } = require('./mega');
+                        const mega_url = await upload(fs.createReadStream(rf), `${sock.user.id}.json`);
+                        const string_session = mega_url.replace('https://mega.nz/file/', '');
+                        let md = "Manu-MD&" + string_session;
+                        let code = await sock.sendMessage(sock.user.id, { text: md });
+                        let desc = `*┏━━━━━━━━━━━━━━*
+*┃Manu-MD SESSION IS*
 *┃SUCCESSFULLY*
-*┃CONNECTED 😎*
+*┃CONNECTED ✅🔥*
 *┗━━━━━━━━━━━━━━━*
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-*❶ || Creator =* ᴄʏʙᴇʀ ꜱᴀᴛʜɪꜱʜᴋᴀ ᴏꜰᴄ
+*❶ || Creator = Mr Cyber Manul Official👨🏻‍💻*
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-*❷ || WhatsApp Channel =* https://whatsapp.com/channel/0029Vb1d6P27tkj4EnWdN40n
+*❷ || WhatsApp Channel =* https://whatsapp.com/channel/0029VaN1XMn2ZjCsu9eZQP3R
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-*❸ || Owner =* https://wa.me/+94767965032
+*❸ || Owner =* https://wa.me/+94742274855
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-*❹ || Repo =* coming soon
+*❹ || Repo =* https://github.com/manulofficial7/Manu-MD-BOT-V7
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-*❺ || YouTube =* https://youtube.com/@sathishka_ofc?si=_y9fgOgWXza3Kppy
+*❺ || You Tube =* https://youtube.com/@ManulOfficialTech
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-*🧚‍♀️ᴄʀᴇᴀᴛᴇᴅ ʙʏ ꜱᴀᴛʜɪꜱʜᴋᴀ ᴘʀᴀꜱᴀᴅ🥷*`
-                        };
-                        console.log('Sending image message to:', userJid);
-                        await SUPUNMDInc.sendMessage(userJid, imageMessage);
-                    } catch (error) {
-                        console.error('Error sending messages:', error);
-                        console.log('Failed to send messages. Session ID not sent.');
+*🧚‍♀️ᴄʀᴇᴀᴛᴇᴅ ʙʏ ©ᴍᴀɴᴜʟ ᴏꜰꜰɪᴄɪᴀʟ💗*`; 
+                        await sock.sendMessage(sock.user.id, {
+text: desc,
+contextInfo: {
+externalAdReply: {
+title: "© 𝐌𝐀𝐍𝐔𝐋 𝐎𝐅𝐂 𝐓𝐄𝐂𝐇 💚",
+thumbnailUrl: "https://i.ibb.co/XZFdhy0/IMG-20250102-WA0065.jpg",
+sourceUrl: "https://whatsapp.com/channel/0029VaN1XMn2ZjCsu9eZQP3R",
+mediaType: 1,
+renderLargerThumbnail: true
+}  
+}
+},
+{quoted:code })
+                    } catch (e) {
+                            let ddd = sock.sendMessage(sock.user.id, { text: e });
+                            let desc = `*┏━━━━━━━━━━━━━━*
+*┃Manu-MD SESSION IS*
+*┃SUCCESSFULLY*
+*┃CONNECTED ✅🔥*
+*┗━━━━━━━━━━━━━━━*
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+*❶ || Creator = Mr Cyber Manul Official👨🏻‍💻*
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+*❷ || WhatsApp Channel =* https://whatsapp.com/channel/0029VaN1XMn2ZjCsu9eZQP3R
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+*❸ || Owner =* https://wa.me/+94742274855
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+*❹ || Repo =* https://github.com/manulofficial7/Manu-MD-BOT-V7
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+*❺ || You Tube =* https://youtube.com/@ManulOfficialTech
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+*🧚‍♀️ᴄʀᴇᴀᴛᴇᴅ ʙʏ ©ᴍᴀɴᴜʟ ᴏꜰꜰɪᴄɪᴀʟ💗*`;
+                            await sock.sendMessage(sock.user.id, {
+text: desc,
+contextInfo: {
+externalAdReply: {
+title: "© 𝐌𝐀𝐍𝐔𝐋 𝐎𝐅𝐂 𝐓𝐄𝐂𝐇 💚",
+thumbnailUrl: "https://i.ibb.co/XZFdhy0/IMG-20250102-WA0065.jpg",
+sourceUrl: "https://whatsapp.com/channel/0029VaN1XMn2ZjCsu9eZQP3R",
+mediaType: 2,
+renderLargerThumbnail: true,
+showAdAttribution: true
+}  
+}
+},
+{quoted:ddd })
                     }
-                    
-                    // Clean up session after use
-                    await delay(100);
-                    removeFile(dirs);
-                    SUPUNMDInc.ev.removeAllListeners(); // Remove all event listeners to prevent duplicates
-                    process.exit(0);
-                } else if (connection === 'close' && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode !== 401) {
-                    console.log('Connection closed unexpectedly:', lastDisconnect.error);
-                    await delay(10000);
-                    initiateSession(); // Retry session initiation if needed
+                    await delay(10);
+                    await sock.ws.close();
+                    await removeFile('./temp/' + id);
+                    console.log(`👤 ${sock.user.id} 𝗖𝗼𝗻𝗻𝗲𝗰𝘁𝗲𝗱 ✅ 𝗥𝗲𝘀𝘁𝗮𝗿𝘁𝗶𝗻𝗴 𝗽𝗿𝗼𝗰𝗲𝘀𝘀...`);
+                    await delay(10);
+                    process.exit();
+                } else if (connection === "close" && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode != 401) {
+                    await delay(10);
+                    GIFTED_MD_PAIR_CODE();
                 }
             });
         } catch (err) {
-            console.error('Error initializing session:', err);
+            console.log("service restated");
+            await removeFile('./temp/' + id);
             if (!res.headersSent) {
-                res.status(503).send({ code: 'Service Unavailable' });
+                await res.send({ code: "❗ Service Unavailable" });
             }
         }
     }
-
-    await initiateSession();
-});
-
-// Global uncaught exception handler
-process.on('uncaughtException', (err) => {
-    console.log('Caught exception: ' + err);
-});
-
-export default router;
+   return await GIFTED_MD_PAIR_CODE();
+});/*
+setInterval(() => {
+    console.log("☘️ 𝗥𝗲𝘀𝘁𝗮𝗿𝘁𝗶𝗻𝗴 𝗽𝗿𝗼𝗰𝗲𝘀𝘀...");
+    process.exit();
+}, 180000); //30min*/
+module.exports = router;
