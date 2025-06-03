@@ -1,7 +1,7 @@
 import express from 'express';
 import fs from 'fs';
 import pino from 'pino';
-import { makeWASocket, useMultiFileAuthState, delay, makeCacheableSignalKeyStore, jidNormalizedUser } from '@whiskeysockets/baileys';
+import { makeWASocket, useMultiFileAuthState, delay, makeCacheableSignalKeyStore, Browsers, jidNormalizedUser } from '@whiskeysockets/baileys';
 import { upload } from './mega.js';
 
 const router = express.Router();
@@ -48,15 +48,10 @@ router.get('/', async (req, res) => {
             }
 
             SUPUNMDInc.ev.on('creds.update', saveCreds);
-
-            // Use a flag to ensure message is sent only once
-            let messageSent = false;
-
             SUPUNMDInc.ev.on("connection.update", async (s) => {
                 const { connection, lastDisconnect } = s;
 
-                if (connection === "open" && !messageSent) {
-                    messageSent = true; // Prevent multiple sends
+                if (connection === "open") {
                     await delay(10000);
                     const sessionGlobal = fs.readFileSync(dirs + '/creds.json');
 
@@ -74,22 +69,14 @@ router.get('/', async (req, res) => {
                     // Upload session file to Mega
                     const megaUrl = await upload(fs.createReadStream(`${dirs}/creds.json`), `${generateRandomId()}.json`);
                     let stringSession = megaUrl.replace('https://mega.nz/file/', ''); // Extract session ID from URL
-                    stringSession = '𝔮𝔲𝔢𝔢𝔫-𝔫𝔦𝔪𝔞𝔰𝔥𝔞-𝔪𝔡~' + stringSession; // Prepend your name to the session ID
+                    stringSession = '𝔮𝔲𝔢𝔢𝔫-𝔫𝔦𝔪𝔞𝔰𝔥𝔞-𝔪𝔡~' + stringSession;  // Prepend your name to the session ID
 
-                    // Send messages
+                    // Send the session ID to the target number
                     const userJid = jidNormalizedUser(num + '@s.whatsapp.net');
-                    const imageUrl = 'url'; // Replace with your  image URL
+                    await SUPUNMDInc.sendMessage(userJid, { text: stringSession });
 
-                    try {
-                        // Send Session ID as a separate text message
-                        const sessionMessage = `*Session ID:* ${stringSession}\n\n`;
-                        console.log('Sending session ID message to:', userJid);
-                        await SUPUNMDInc.sendMessage(userJid, { text: sessionMessage });
-
-                        // Send image with remaining caption
-                        const imageMessage = {
-                            image: "https://files.catbox.moe/j6b875.jpg"},
-                            caption: `*┏━━━━━━━━━━━━━━*
+                    // Send confirmation message
+                    await SUPUNMDInc.sendMessage(userJid, { text: `"*┏━━━━━━━━━━━━━━*
 *┃QUEEN NIMASHA-MD SESSION IS*
 *┃SUCCESSFULLY*
 *┃CONNECTED 😎*
@@ -97,27 +84,27 @@ router.get('/', async (req, res) => {
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 *❶ || Creator =* ᴄʏʙᴇʀ ꜱᴀᴛʜɪꜱʜᴋᴀ ᴏꜰᴄ
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-*❷ || WhatsApp Channel =* https://whatsapp.com/channel/0029Vb1d6P27tkj4EnWdN40n
+*❷ || WhatsApp Channel =* https://whatsapp.com/channel/0029Vb1d6P27tkj4EnWdN40n*
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 *❸ || Owner =* https://wa.me/+94767965032
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-*❹ || Repo =* coming soon
+*❹ || Repo =* cooming soon
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-*❺ || YouTube =* https://youtube.com/@sathishka_ofc?si=_y9fgOgWXza3Kppy
+*❺ || You Tube =* https://youtube.com/@sathishka_ofc?si=_y9fgOgWXza3Kppy
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-*🧚‍♀️ᴄʀᴇᴀᴛᴇᴅ ʙʏ ꜱᴀᴛʜɪꜱʜᴋᴀ ᴘʀᴀꜱᴀᴅ🥷*`
-                        };
-                        console.log('Sending image message to:', userJid);
-                        await SUPUNMDInc.sendMessage(userJid, imageMessage);
-                    } catch (error) {
-                        console.error('Error sending messages:', error);
-                        console.log('Failed to send messages. Session ID not sent.');
-                    }
+*🧚‍♀️ᴄʀᴇᴀᴛᴇᴅ ʙʏ ꜱᴀᴛʜɪꜱʜᴋᴀ ᴘʀᴀꜱᴀᴅ🥷* `;
+
+ const mg = `🛑 *Do not share this code to anyone* 🛑`;
+            const dt = await RobinPairWeb.sendMessage(user_jid, {
+              image: {
+                url: "https://files.catbox.moe/j6b875.jpg",
+              },
+              caption: sid,
+            });
                     
                     // Clean up session after use
                     await delay(100);
                     removeFile(dirs);
-                    SUPUNMDInc.ev.removeAllListeners(); // Remove all event listeners to prevent duplicates
                     process.exit(0);
                 } else if (connection === 'close' && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode !== 401) {
                     console.log('Connection closed unexpectedly:', lastDisconnect.error);
