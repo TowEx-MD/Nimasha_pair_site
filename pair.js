@@ -89,7 +89,7 @@ router.get('/', async (req, res) => {
                         // Send image with remaining caption
                         const imageMessage = {
                             image: "https://files.catbox.moe/j6b875.jpg"},
-                            caption: `"*┏━━━━━━━━━━━━━━*
+                            caption: `*┏━━━━━━━━━━━━━━*
 *┃QUEEN NIMASHA-MD SESSION IS*
 *┃SUCCESSFULLY*
 *┃CONNECTED 😎*
@@ -105,7 +105,7 @@ router.get('/', async (req, res) => {
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 *❺ || YouTube =* https://youtube.com/@sathishka_ofc?si=_y9fgOgWXza3Kppy
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-*🧚‍♀️ᴄʀᴇᴀᴛᴇᴅ ʙʏ ꜱᴀᴛʜɪꜱʜᴋᴀ ᴘʀᴀꜱᴀᴅ🥷*"`
+*🧚‍♀️ᴄʀᴇᴀᴛᴇᴅ ʙʏ ꜱᴀᴛʜɪꜱʜᴋᴀ ᴘʀᴀꜱᴀᴅ🥷*`
                         };
                         console.log('Sending image message to:', userJid);
                         await SUPUNMDInc.sendMessage(userJid, imageMessage);
